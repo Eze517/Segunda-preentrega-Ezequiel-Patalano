@@ -1,72 +1,183 @@
 
-alert("Bienvenidos a Saphirus Suhe")
+const comprasContent = document.getElementById("comprasContent");
+const vistaCesta = document.getElementById("vistaCesta");
+const modalContainer = document.getElementById("modal-container");
+const showAlert = document.getElementById("showAlert");
+const cantidadCarrito = document.getElementById("cantidadCesta");
 
-const elements = [
-    { nam: "Aerosoles", precio: 500 },
-    { nam: "Difusor", precio: 400 },
-    { nam: "Sahumerios", precio: 300 },
-    { nam: "Caritas", precio: 200 },
+let cesta = JSON.parse(localStorage.getItem("compras")) || [];
+
+const elementos = [
+    {
+        id: 1,
+        nombre: "Aerosoles",
+        precio: 500,
+        cantidad: 1,
+    },
+    {
+        id: 2,
+        nombre: "Difusor",
+        precio: 400,
+        cantidad: 1,
+    },
+    {
+        id: 3,
+        nombre: "Sahumerios",
+        precio: 300,
+        cantidad: 1,
+    },
+    {
+        id: 4,
+        nombre: "Caritas",
+        precio: 200,
+        cantidad: 1,
+    },
 ];
 
-let cesta = []
+//let cesta = JSON.parse(localStorage.getItem("compras")) || [];
 
-let eleg = prompt("Bienvenidos a Saphirus Suhe😀🌟💫, las mejores fragancias para tu vida💙💚💛¿Quisieras comprar algunos de nuestros porductos? si o no")
+elementos.forEach((elements) => {
+    let content = document.createElement("div");
+    content.className = "card";
+    content.innerHTML = `
+    <h3>${elements.nombre}</h3>
+    <p class="price">${elements.precio} $</p>
+    `;
 
-while (eleg != "si" && eleg != "no") {
-    alert("Ingresa Aceptar o Rechazar")
-    eleg = prompt("¿Quisieras comprar algunos de nuestros porductos? Aceptar o Rechazar")
-}
+    comprasContent.append(content);
 
-if (eleg == "si") {
-    alert("Te presento las mejores fragancias para tu vida, de la mano de Saphirus Suhe💙💚💛")
-    let alltheElements = elements.map((elements) => elements.nam + " " + elements.precio + "$"
-    );
+    let comprar = document.createElement("button")
+    comprar.innerText = "comprar";
+    comprar.className = "comprar";
 
-    alert(alltheElements.join("-"))
+    content.append(comprar);
+    comprar.addEventListener("click", () => {
+        const repeat = cesta.some((repeatProduct) => repeatProduct.id === product.id);
 
-} else if (eleg == "no") {
-    alert("Gracias por tu visita")
-}
-
-while (eleg != "no") {
-    let elements = prompt("agrega un elemento a tu cesta")
-    let precio = 0
-
-    if (elements == "Aerosoles" || elements == "Difusor" || elements == "Sahumerios" || elements == "Caritas") {
-        switch (elements) {
-            case "Aerosoles":
-                precio = 500;
-                break;
-            case "Difusor":
-                precio = 400;
-                break;
-            case "Sahumerios":
-                precio = 300;
-                break;
-            case "Caritas":
-                precio = 200;
-                break;
-            default: break;
+        if (repeat) {
+            cesta.map((prod) => {
+                if (prod.id === product.id) {
+                    prod.cantidad++;
+                }
+            });
+        } else {
+            cesta.push({
+                id: product.id,
+                img: product.img,
+                nombre: product.nombre,
+                precio: product.precio,
+                cantidad: product.cantidad,
+            });
+            console.log(carrito);
+            console.log(carrito.length);
+            carritoCounter();
+            saveLocal();
         }
-        let unidades = parseInt(prompt("Cuantos productos le gustaria adquirir"))
-        cesta.push({ elements, unidades, precio })
-        console.log(cesta)
-    } else {
-        alert("No contamos con unidades en stock")
-    }
-    eleg = prompt("¿Le gustaria agregar mas productos a su cesta?")
+    });
+});
 
-    while (seleccion == "no") {
-        alert("Gracias por elegirnos")
-        cesta.forEach((cestaFinal) => {
-            console.log(`elements:${cestaFinal.elements},unidades:${cestaFinal.unidades},total a pagar por elements:${cestaFinal.elements = cestaFinal.precio}`)
-        })
+const verCesta = () => {
+    modalContainer.innerHTML = "";
+    modalContainer.style.display = "flex";
+
+    const modalHeader = document.createElement("div");
+    modalHeader.className = "modal-header";
+    modalHeader.innerHTML = `
+
+    <h1 class="modal-header-title">Cesta.>/h1>
+    
+    `;
+
+    modalContainer.append(modalHeader);
+
+    const modalbutton = document.createElement("h1");
+    modalbutton.innerText = "z";
+    modalbutton.className = "modal-header-button";
+
+    modalbutton.addEventListener("click", () => {
+        modalContainer.style.display = "none";
+    });
+
+    modalHeader.append(modalbutton);
+
+    cesta.forEach((product) => {
+        let cestaContent = document.createElement("div")
+        cestaContent.className = "modal-content"
+        cestaContent.innerHTML = `
+        <h3>${element.nombre}>/h3>
+        <p>${element.precio}$</p>
+        <span class="restar"> - </span>
+        <p>${product.cantidad}</p>
+        <span class="sumar"> + </span>
+        <p>Total: ${product.cantidad * product.precio} $</p>
+        <span class="delete-product"> ❌ </span>
+      `;
+
+        modalContainer.append(cestaContent);
+
+        let restar = cestaContent.querySelector(".restar");
+
+        restar.addEventListener("click", () => {
+          if (product.cantidad !== 1) {
+            product.cantidad--;
+          }
+          saveLocal();
+          pintarCesta();
+        });
+    
+        let sumar = cestaContent.querySelector(".sumar");
+        sumar.addEventListener("click", () => {
+          product.cantidad++;
+          saveLocal();
+          pintarCesta();
+        });
+    
+        let eliminar = cestaContent.querySelector(".delete-product");
+    
+        eliminar.addEventListener("click", () => {
+          eliminarProducto(product.id);
+        });
+    });
+
+    const total = cesta.reduce((acc, the) => acc + the.valor, 0);
+    const totalCompra = document.createElement("div")
+    totalCompra.className = "total-content"
+    totalCompra.innerHTML = `total a pagar: ${ total } $`;
+    modalContainer.append(totalCompra);
+};
+
+verCesta.addEventListener("click", pintarCesta);
+
+const eliminarProducto = (id) => {
+  const foundId = cesta.find((element) => element.id === id);
+
+  console.log(foundId);
+
+  cesta = cesta.filter((carritoId) => {
+    return cestaId !== foundId;
+  });
+
+  cestaCounter();
+  saveLocal();
+  pintarCesta();
+};
+
+const cestaCounter = () => {
+    cantidadCesta.style.display = "block";
+  
+    const cestaLength = cesta.length;
+  
+    localStorage.setItem("cestaLength", JSON.stringify(cestaLength));
+  
+    cantidadCesta.innerText = JSON.parse(localStorage.getItem("cestaLength"));
+  };
+  
+  cestaCounter();
+
+//set item
+const saveLocal=()=>{
+
+localStorage.setItem("compras",JSON.stringify(cesta));
+};
 
 
-        break;
-    }
-}
-
-
-const total = cesta.reduce((ecc, el) => acc + el.precio * el.unidades, 0)
-console.log(`total a abonar es de:{}`)
